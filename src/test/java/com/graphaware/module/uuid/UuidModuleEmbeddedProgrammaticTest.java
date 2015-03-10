@@ -19,7 +19,6 @@ import com.graphaware.common.policy.NodeInclusionPolicy;
 import com.graphaware.common.util.IterableUtils;
 import com.graphaware.runtime.GraphAwareRuntime;
 import com.graphaware.runtime.GraphAwareRuntimeFactory;
-import com.graphaware.runtime.config.RuntimeConfiguration;
 import com.graphaware.runtime.policy.all.IncludeAllBusinessNodes;
 import org.junit.After;
 import org.junit.Before;

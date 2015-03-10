@@ -1,8 +1,6 @@
 GraphAware Neo4j UUID
 =====================
 
-[![Build Status](https://travis-ci.org/graphaware/neo4j-uuid.png)](https://travis-ci.org/graphaware/neo4j-uuid) | <a href="http://graphaware.com/downloads/" target="_blank">Downloads</a> | <a href="http://graphaware.com/site/uuid/latest/apidocs/" target="_blank">Javadoc</a> | Latest Release: 2.1.7.28.7
-
 GraphAware UUID is a simple library that transparently assigns a UUID to newly created nodes in the graph and makes sure nobody
 can (accidentally or intentionally) change or delete them.
 
@@ -14,13 +12,6 @@ Getting the Software
 When using Neo4j in the <a href="http://docs.neo4j.org/chunked/stable/server-installation.html" target="_blank">standalone server</a> mode,
 you will need the <a href="https://github.com/graphaware/neo4j-framework" target="_blank">GraphAware Neo4j Framework</a> and GraphAware Neo4j UUID .jar files (both of which you can <a href="http://graphaware.com/downloads/" target="_blank">download here</a>) dropped
 into the `plugins` directory of your Neo4j installation. After changing a few lines of config (read on) and restarting Neo4j, the module will do its magic.
-
-### Embedded Mode / Java Development
-
-Java developers that use Neo4j in <a href="http://docs.neo4j.org/chunked/stable/tutorials-java-embedded.html" target="_blank">embedded mode</a>
-and those developing Neo4j <a href="http://docs.neo4j.org/chunked/stable/server-plugins.html" target="_blank">server plugins</a>,
-<a href="http://docs.neo4j.org/chunked/stable/server-unmanaged-extensions.html" target="_blank">unmanaged extensions</a>,
-GraphAware Runtime Modules, or Spring MVC Controllers can include use the UUID as a dependency for their Java project.
 
 #### Releases
 
@@ -76,27 +67,6 @@ Note that "UIDM" becomes the module ID.
 `com.graphaware.module.UIDM.nodes` specifies either a fully qualified class name of [`NodeInclusionPolicy`](http://graphaware.com/site/framework/latest/apidocs/com/graphaware/common/policy/NodeInclusionPolicy.html) implementation,
 or a Spring Expression Language expression determining, which nodes to assign a UUID to. The default is to assign the
 UUID property to every node which isn't internal to the framework.
-
-
-### Embedded Mode / Java Development
-
-To use the UUID module programmatically, register the module like this
-
-```java
- GraphAwareRuntime runtime = GraphAwareRuntimeFactory.createRuntime(database);  //where database is an instance of GraphDatabaseService
- UuidModule module = new UuidModule("UUIDM", UuidConfiguration.defaultConfiguration());
- runtime.registerModule(module);
- runtime.start();
-```
-
-Alternatively:
-```java
- GraphDatabaseService database = new GraphDatabaseFactory().newEmbeddedDatabaseBuilder(pathToDb)
-    .loadPropertiesFromFile(this.getClass().getClassLoader().getResource("neo4j.properties").getPath())
-    .newGraphDatabase();
- 
- //make sure neo4j.properties contain the lines mentioned in previous section
-```
 
 Using GraphAware UUID
 ---------------------

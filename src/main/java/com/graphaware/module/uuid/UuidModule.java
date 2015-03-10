@@ -24,46 +24,32 @@ import com.graphaware.tx.executor.batch.IterableInputBatchTransactionExecutor;
 import com.graphaware.tx.executor.batch.UnitOfWork;
 import com.graphaware.tx.executor.single.TransactionCallback;
 import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.tooling.GlobalGraphOperations;
 
-import java.util.List;
-
-/**
- * {@link com.graphaware.runtime.module.TxDrivenModule} that assigns UUID's to nodes in the graph.
- */
 public class UuidModule extends BaseTxDrivenModule<Void> {
 
     private final static int BATCH_SIZE = 1000;
 
     private final UuidGenerator uuidGenerator;
     private final UuidConfiguration uuidConfiguration;
+    private final String UUID_PROPERTY;
 
-    /**
-     * Construct a new UUID module.
-     *
-     * @param moduleId ID of the module.
-     */
     public UuidModule(String moduleId, UuidConfiguration configuration) {
         super(moduleId);
         this.uuidGenerator = new EaioUuidGenerator();
         this.uuidConfiguration = configuration;
+        this.UUID_PROPERTY = uuidConfiguration.getUuidProperty();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public TxDrivenModuleConfiguration getConfiguration() {
         return uuidConfiguration;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize(GraphDatabaseService database) {
+
         new IterableInputBatchTransactionExecutor<>(
                 database,
                 BATCH_SIZE,
@@ -84,9 +70,6 @@ public class UuidModule extends BaseTxDrivenModule<Void> {
         ).execute();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Void beforeCommit(ImprovedTransactionData transactionData) throws DeliberateTransactionRollbackException {
 
@@ -95,24 +78,28 @@ public class UuidModule extends BaseTxDrivenModule<Void> {
             assignUuid(node);
         }
 
-        //Check if the UUID has been modified or removed from the node and throw an error
+        //Check if the UUID has been modified or removed from the node and throw an error if so
         for (Change<Node> change : transactionData.getAllChangedNodes()) {
-            if (!change.getCurrent().hasProperty(uuidConfiguration.getUuidProperty())) {
-                throw new DeliberateTransactionRollbackException("You are not allowed to remove the " + uuidConfiguration.getUuidProperty() + " property");
-            }
-
-            if (!change.getPrevious().getProperty(uuidConfiguration.getUuidProperty()).equals(change.getCurrent().getProperty(uuidConfiguration.getUuidProperty()))) {
-                throw new DeliberateTransactionRollbackException("You are not allowed to modify the " + uuidConfiguration.getUuidProperty() + " property");
-            }
+            rollbackIfRemoved(change);
+            rollbackIfModified(change);
         }
 
         return null;
     }
 
+    /**
+     * If the node doesn't already have a uuid property, we want to create one and set it
+     * @param node
+     */
     private void assignUuid(Node node) {
-        if (!node.hasProperty(uuidConfiguration.getUuidProperty())) {
-            String uuid = uuidGenerator.generateUuid();
-            node.setProperty(uuidConfiguration.getUuidProperty(), uuid);
-        }
+        // TODO
+    }
+
+    private void rollbackIfModified(Change<Node> change) {
+        // TODO
+    }
+
+    private void rollbackIfRemoved(Change<Node> change) {
+        // TODO
     }
 }
